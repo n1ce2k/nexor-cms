@@ -5,6 +5,7 @@ namespace Nexor\Cms;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
@@ -99,6 +100,11 @@ class NexorServiceProvider extends ServiceProvider
         $this->registerMaintenanceMode();
         $this->registerLicenseGuard();
         $this->registerInlineEditor();
+
+        AboutCommand::add('NEXOR CMS', fn (): array => [
+            'Version' => Nexor::VERSION,
+            'Created by' => Nexor::AUTHOR.' — '.Nexor::AUTHOR_URL,
+        ]);
         $this->registerCookies();
         $this->registerRoutes();
         $this->registerMail();

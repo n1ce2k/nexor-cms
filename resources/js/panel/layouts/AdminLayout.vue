@@ -100,6 +100,11 @@ function isOpen(label) {
                 <p v-if="!ui.sidebarCollapsed && session.brand.version"
                    class="sidebar-label px-3 pt-2 text-[0.65rem]">
                     NEXOR {{ session.brand.version }}
+                    <span v-if="session.brand.author" class="hidden normal-case tracking-normal">
+                        created by
+                        <a :href="session.brand.author_url" target="_blank" rel="noopener"
+                           class="underline-offset-2 hover:underline">{{ session.brand.author }}</a>
+                    </span>
                 </p>
             </div>
 

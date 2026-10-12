@@ -216,4 +216,4 @@ php artisan nexor:permissions
 
 ## Лицензия
 
-MIT.
+Закрытая (proprietary): использование только по лицензионному ключу автора. Условия — в файле `LICENSE`.

@@ -43,6 +43,8 @@ class BootstrapController extends ApiController
                 'initial' => Nexor::brand('initial'),
                 'site_name' => Setting::get('site.name', Nexor::brand('name')),
                 'version' => Nexor::VERSION,
+                'author' => Nexor::AUTHOR,
+                'author_url' => Nexor::AUTHOR_URL,
             ],
             'iblocks' => IblockResource::collection($iblocks),
             'property_types' => collect(Nexor::propertyTypes())->map(fn (PropertyType $type) => [

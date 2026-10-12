@@ -2,12 +2,13 @@
     "name": "n1ce2k/nexor-cms",
     "description": "NEXOR CMS — админ-панель для Laravel с инфоблоками, свойствами произвольных типов и системой ролей.",
     "type": "library",
-    "license": "MIT",
+    "license": "proprietary",
     "keywords": ["laravel", "cms", "admin", "infoblocks", "nexor"],
     "authors": [
         {
             "name": "n1ce",
-            "email": "andrew.n1ce2k@gmail.com"
+            "email": "andrew.n1ce2k@gmail.com",
+            "homepage": "https://github.com/n1ce2k"
         }
     ],
     "require": {

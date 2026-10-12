@@ -11,8 +11,10 @@ use Nexor\Cms\Support\License\Signature;
  * Лицензия сайта: разбор ключа и то, что из него следует.
  *
  * Редакцию даёт ключ. Значение `NEXOR_LICENSE` осталось только для разработки
- * (окружения `local` и `testing`) — на боевом сервере оно ни на что не влияет,
- * иначе строкой в `.env` открывался бы любой уровень.
+ * и действует на рабочих адресах (`localhost`, `site.test`) — на настоящем
+ * домене оно ни на что не влияет, иначе строкой в `.env` открывался бы любой
+ * уровень. Окружение (`APP_ENV`) на лицензию не влияет вовсе: это тоже строка
+ * в `.env`, и ей снималась бы вся проверка.
  *
  * Кроме редакции ключ отвечает за домен: ключ, выданный на `site.ru`, на другом
  * домене не действует. Что делать с чужим доменом, решает `nexor.license_guard`
@@ -34,6 +36,18 @@ class Licensing
 
     /** База привязана к другой установке. */
     public const MOVED = 'moved';
+
+    /**
+     * Публичный ключ издателя.
+     *
+     * Лежит в коде, а не в конфиге: из `.env` его можно было бы подменить своим
+     * и подписывать ключи самому. Им лицензию можно только проверить —
+     * приватная половина в репозиторий не попадает.
+     */
+    public const PUBLIC_KEY = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqWWTJRu4z/3zM7mmJVkSNfB1KcuYjzz+3YgPh+uofTBw9IKil/cJ7oLYuRj+uGrpS15eJ3UeZHhNB+ZPSI/U9g==';
+
+    /** Другой издатель — только для тестов, они подписывают ключи сами. */
+    protected static ?string $issuer = null;
 
     protected static ?LicenseKey $parsed = null;
 
@@ -134,22 +148,22 @@ class Licensing
     }
 
     /**
-     * Публичный ключ издателя: в конфиге он лежит одной строкой base64.
+     * Публичный ключ издателя в виде PEM.
      */
     public static function publicKey(): string
     {
-        $value = trim((string) config('nexor.license_public_key'));
+        $value = self::$issuer ?? self::PUBLIC_KEY;
 
         return str_contains($value, 'BEGIN') ? $value : Signature::pem($value);
     }
 
     /**
-     * Привязку к домену не проверяем: своя машина или рабочий домен.
+     * Привязку к домену не проверяем только на рабочем адресе: `localhost`,
+     * частный IP, домен вида `site.test`.
      */
     public static function exempt(?string $host = null): bool
     {
-        return app()->environment(['local', 'testing'])
-            || Host::isLocal(Host::normalise($host ?? Host::current()));
+        return Host::isLocal(Host::normalise($host ?? Host::current()));
     }
 
     /**
@@ -157,7 +171,7 @@ class Licensing
      */
     protected static function fallback(): License
     {
-        $value = app()->environment(['local', 'testing'])
+        $value = self::exempt()
             ? strtolower(trim((string) config('nexor.license', 'lite')))
             : 'lite';
 

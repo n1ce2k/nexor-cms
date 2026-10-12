@@ -82,8 +82,6 @@ return [
 
     'license_key' => env('NEXOR_LICENSE_KEY'),
 
-    'license_public_key' => env('NEXOR_LICENSE_PUBLIC_KEY', 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqWWTJRu4z/3zM7mmJVkSNfB1KcuYjzz+3YgPh+uofTBw9IKil/cJ7oLYuRj+uGrpS15eJ3UeZHhNB+ZPSI/U9g=='),
-
     /*
     |--------------------------------------------------------------------------
     | Привязка к домену
