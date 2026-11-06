@@ -22,12 +22,13 @@ class PanelAssets
     /** Пакет ядра в маршруте ассетов. */
     public const CORE = 'nexor';
 
-    /** Тема и утилиты Tailwind — общие для Vue-панели и Blade-админки. */
+    /** Тема и утилиты Tailwind — общие для панели и страницы входа. */
     protected const STYLES_ENTRY = 'resources/css/admin.css';
 
     protected const PANEL_ENTRY = 'resources/js/panel/main.js';
 
-    protected const CLASSIC_ENTRIES = [self::STYLES_ENTRY, 'resources/js/admin.js'];
+    /** Страницы до входа в панель: вход, настройка модели пользователя. */
+    protected const AUTH_ENTRIES = [self::STYLES_ENTRY, 'resources/js/admin.js'];
 
     /** @var array<string, array<string, mixed>> */
     protected static array $manifests = [];
@@ -71,18 +72,18 @@ class PanelAssets
     }
 
     /**
-     * Blade-админка: стили и Alpine.
+     * Страницы до входа: стили панели и Alpine для уведомлений.
      */
-    public static function classic(): HtmlString
+    public static function auth(): HtmlString
     {
         if (self::mode() === 'vite') {
             return app(Vite::class)(array_map(
                 fn (string $entry) => self::sourcePath(self::corePath($entry)),
-                self::CLASSIC_ENTRIES,
+                self::AUTH_ENTRIES,
             ));
         }
 
-        return new HtmlString(implode('', array_map(self::entryTags(...), self::CLASSIC_ENTRIES)));
+        return new HtmlString(implode('', array_map(self::entryTags(...), self::AUTH_ENTRIES)));
     }
 
     /**

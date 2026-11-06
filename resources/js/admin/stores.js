@@ -1,8 +1,6 @@
 import Alpine from 'alpinejs';
 import { resolveTheme, setTheme } from './theme';
 
-const SIDEBAR_KEY = 'admin.sidebar.collapsed';
-
 Alpine.store('theme', {
     current: resolveTheme(),
 
@@ -13,16 +11,6 @@ Alpine.store('theme', {
 
     toggle() {
         this.set(this.current === 'dark' ? 'light' : 'dark');
-    },
-});
-
-Alpine.store('sidebar', {
-    collapsed: localStorage.getItem(SIDEBAR_KEY) === '1',
-    mobileOpen: false,
-
-    toggle() {
-        this.collapsed = !this.collapsed;
-        localStorage.setItem(SIDEBAR_KEY, this.collapsed ? '1' : '0');
     },
 });
 

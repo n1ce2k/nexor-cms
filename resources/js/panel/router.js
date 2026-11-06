@@ -5,8 +5,10 @@ import { useSession } from './stores/session';
 import Dashboard from './pages/Dashboard.vue';
 import LogsIndex from './pages/LogsIndex.vue';
 import NotFound from './pages/NotFound.vue';
+import ProfilePage from './pages/ProfilePage.vue';
 import AgreementForm from './pages/agreements/AgreementForm.vue';
 import AgreementIndex from './pages/agreements/AgreementIndex.vue';
+import BackupIndex from './pages/backups/BackupIndex.vue';
 import CookieSettings from './pages/cookies/CookieSettings.vue';
 import ElementForm from './pages/elements/ElementForm.vue';
 import ElementIndex from './pages/elements/ElementIndex.vue';
@@ -74,6 +76,8 @@ const routes = [
     { path: '/roles/:role/edit', name: 'roles.edit', component: RoleForm, props: true, meta: { permission: 'roles.update' } },
     { path: '/site-settings', name: 'settings', component: SiteSettings, meta: { permission: 'settings.view' } },
     { path: '/logs', name: 'logs', component: LogsIndex, meta: { permission: 'logs.view' } },
+    { path: '/profile', name: 'profile', component: ProfilePage },
+    { path: '/settings/backups', name: 'backups.index', component: BackupIndex, meta: { permission: 'backups.manage' } },
     { path: '/modules', name: 'modules.index', component: ModuleIndex, meta: { permission: 'modules.view' } },
     { path: '/updates', name: 'updates.index', component: UpdatesIndex, meta: { permission: 'updates.manage' } },
 

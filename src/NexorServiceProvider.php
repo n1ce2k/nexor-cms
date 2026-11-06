@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Nexor\Cms\Console\BackupCommand;
 use Nexor\Cms\Console\BindLicenseCommand;
 use Nexor\Cms\Console\HtaccessCommand;
 use Nexor\Cms\Console\InstallCommand;
@@ -130,6 +131,7 @@ class NexorServiceProvider extends ServiceProvider
                 SyncPermissionsCommand::class,
                 UserModelCommand::class,
                 HtaccessCommand::class,
+                BackupCommand::class,
             ]);
 
             $this->registerPublishing();
@@ -346,7 +348,7 @@ class NexorServiceProvider extends ServiceProvider
      * Имя тега разворачивается в класс: `catalog.section` →
      * `Nexor\Cms\View\Components\Catalog\Section`. Если класса нет, Blade
      * ищет анонимный компонент в `resources/views/components` пакета —
-     * именно так живут `<x-nexor::admin.*>` из Blade-админки.
+     * именно так живут `<x-nexor::admin.*>` страницы входа.
      */
     protected function registerComponents(): void
     {

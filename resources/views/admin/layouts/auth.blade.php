@@ -16,7 +16,7 @@
         })();
     </script>
 
-    {{ \Nexor\Cms\Support\PanelAssets::classic() }}
+    {{ \Nexor\Cms\Support\PanelAssets::auth() }}
 </head>
 <body class="flex h-full items-center justify-center px-4 font-sans antialiased">
     <div class="w-full max-w-sm">

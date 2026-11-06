@@ -156,11 +156,11 @@ function isOpen(label) {
                         </div>
 
                         <div class="pt-1">
-                            <a :href="session.routes.classic"
-                               class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--text-base)] transition hover:bg-[var(--surface-muted)]">
-                                <NIcon name="grip" size="size-4" />
-                                Классическая админка
-                            </a>
+                            <RouterLink :to="{ name: 'profile' }" @click="userMenu = false"
+                                        class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--text-base)] transition hover:bg-[var(--surface-muted)]">
+                                <NIcon name="user" size="size-4" />
+                                Профиль
+                            </RouterLink>
 
                             <form :action="session.routes.logout" method="POST">
                                 <input type="hidden" name="_token" :value="csrf">

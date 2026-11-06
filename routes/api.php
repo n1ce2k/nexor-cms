@@ -4,6 +4,7 @@ use Illuminate\Routing\PendingResourceRegistration;
 use Illuminate\Support\Facades\Route;
 use Nexor\Cms\Http\Controllers\Api\ActivityLogController;
 use Nexor\Cms\Http\Controllers\Api\AgreementController;
+use Nexor\Cms\Http\Controllers\Api\BackupController;
 use Nexor\Cms\Http\Controllers\Api\BootstrapController;
 use Nexor\Cms\Http\Controllers\Api\CookieController;
 use Nexor\Cms\Http\Controllers\Api\DashboardController;
@@ -18,6 +19,7 @@ use Nexor\Cms\Http\Controllers\Api\MailTemplateController;
 use Nexor\Cms\Http\Controllers\Api\MenuController;
 use Nexor\Cms\Http\Controllers\Api\MenuItemController;
 use Nexor\Cms\Http\Controllers\Api\ModuleController;
+use Nexor\Cms\Http\Controllers\Api\ProfileController;
 use Nexor\Cms\Http\Controllers\Api\RoleController;
 use Nexor\Cms\Http\Controllers\Api\SettingController;
 use Nexor\Cms\Http\Controllers\Api\ToolsController;
@@ -38,6 +40,13 @@ $guard = function (PendingResourceRegistration $resource, string $middleware, st
 };
 
 Route::get('bootstrap', BootstrapController::class)->name('bootstrap');
+
+// Свой профиль доступен каждому, кто вошёл в панель, — отдельного права нет.
+Route::controller(ProfileController::class)->prefix('profile')->name('profile.')->group(function (): void {
+    Route::get('/', 'show')->name('show');
+    Route::put('/', 'update')->name('update');
+    Route::put('password', 'password')->name('password');
+});
 Route::get('dashboard', DashboardController::class)->name('dashboard');
 
 Route::get('modules', [ModuleController::class, 'index'])
@@ -216,6 +225,17 @@ Route::prefix('tools')->name('tools.')->group(function (): void {
     Route::get('/', [ToolsController::class, 'state'])->name('state');
     Route::post('sql', [ToolsController::class, 'sql'])->name('sql');
     Route::post('php', [ToolsController::class, 'php'])->name('php');
+});
+
+/*
+ * Резервные копии: в архиве весь сайт вместе с .env и базой — право отдельное.
+ */
+Route::middleware('nexor.permission:backups.manage')->name('backups.')->prefix('backups')->group(function (): void {
+    Route::get('/', [BackupController::class, 'index'])->name('index');
+    Route::post('/', [BackupController::class, 'store'])->name('store');
+    Route::post('{backup}/step', [BackupController::class, 'step'])->name('step');
+    Route::get('{backup}/download/{part}', [BackupController::class, 'download'])->name('download')->whereNumber('part');
+    Route::delete('{backup}', [BackupController::class, 'destroy'])->name('destroy');
 });
 
 /*

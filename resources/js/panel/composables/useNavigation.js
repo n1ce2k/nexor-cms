@@ -133,6 +133,10 @@ export function useNavigation() {
             settings.push({ label: 'Обновления', icon: 'upload', to: { name: 'updates.index' } });
         }
 
+        if (session.can('backups.manage')) {
+            settings.push({ label: 'Резервное копирование', icon: 'save', to: { name: 'backups.index' } });
+        }
+
         // if (session.can('logs.view')) {
         //     settings.push({ label: 'Журнал действий', icon: 'clock', to: { name: 'logs' } });
         // }

@@ -22,7 +22,7 @@ class Nexor
      * The release is the git tag; this constant is what the running code can
      * print — in the panel, in a bug report, in an upgrade check.
      */
-    public const VERSION = '0.3.33';
+    public const VERSION = '0.3.34';
 
     /** Автор CMS — подпись в панели и в `php artisan about`. */
     public const AUTHOR = 'n1ce';
@@ -108,44 +108,19 @@ class Nexor
     }
 
     /**
-     * Whether the Vue panel owns the bare /admin URL.
-     */
-    public static function vueIsDefault(): bool
-    {
-        return config('nexor.panel.default', 'vue') === 'vue';
-    }
-
-    /**
      * Base path the SPA router is mounted on.
      */
     public static function panelBase(): string
     {
-        $prefix = self::vueIsDefault() ? '' : trim((string) config('nexor.panel.path', 'vue'), '/');
-
-        return rtrim('/'.self::routePrefix().'/'.$prefix, '/');
+        return '/'.self::routePrefix();
     }
 
     /**
-     * Route name of the screen a signed-in administrator lands on.
+     * Where a signed-in administrator lands.
      */
-    public static function homeRoute(): string
-    {
-        return self::vueIsDefault() ? 'admin.panel' : 'admin.dashboard';
-    }
-
     public static function home(): string
     {
-        return route(self::homeRoute());
-    }
-
-    /**
-     * URL of the panel that is *not* the default, for the switch-over link.
-     */
-    public static function otherPanel(): string
-    {
-        return self::vueIsDefault()
-            ? route('admin.dashboard')
-            : url(self::routePrefix().'/'.trim((string) config('nexor.panel.path', 'vue'), '/'));
+        return route('admin.panel');
     }
 
     /**

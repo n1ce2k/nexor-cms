@@ -151,6 +151,13 @@ class Permissions
                     'modules.update' => 'Включение и выключение модулей',
                 ],
             ],
+            'backups' => [
+                'label' => 'Резервное копирование',
+                'sort' => 760,
+                'items' => [
+                    'backups.manage' => 'Создание, скачивание и удаление резервных копий',
+                ],
+            ],
         ] + Nexor::modules()->permissionDefinitions();
     }
 
