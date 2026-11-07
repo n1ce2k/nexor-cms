@@ -21,6 +21,12 @@ class Backup
 
     public const FAILED = 'failed';
 
+    /** Архив загружается с компьютера. */
+    public const UPLOADING = 'uploading';
+
+    /** Какие файлы можно загрузить: tar.gz и его тома. */
+    public const UPLOAD_NAME = '/\.(tar\.gz|tgz)(\.\d{1,3})?$/i';
+
     /** Что из файлов попадает в копию. */
     public const FILES_ALL = 'all';
 
@@ -113,6 +119,91 @@ class Backup
         $backup->save();
 
         return $backup;
+    }
+
+    /**
+     * Копия, которая приедет с компьютера: тома загружаются кусками.
+     *
+     * @param  array<int, array{name: string, size: int}>  $files  тома по порядку
+     */
+    public static function createUpload(array $files, ?string $author = null): static
+    {
+        if ($files === []) {
+            throw new RuntimeException('Выберите файл архива.');
+        }
+
+        foreach ($files as $file) {
+            if (! preg_match(self::UPLOAD_NAME, $file['name'])) {
+                throw new RuntimeException('«'.$file['name'].'» — не архив .tar.gz и не его том.');
+            }
+        }
+
+        $id = 'backup_'.now()->format('Y-m-d_His').'_'.Str::lower(Str::random(4));
+        $single = count($files) === 1;
+
+        $backup = new static([
+            'id' => $id,
+            'status' => self::UPLOADING,
+            'phase' => 'upload',
+            'origin' => 'upload',
+            'options' => ['database' => null, 'files' => null, 'exclude_vendor' => null, 'part_mb' => null],
+            'author' => $author,
+            'created_at' => now()->toIso8601String(),
+            'updated_at' => now()->toIso8601String(),
+            'finished_at' => null,
+            'error' => null,
+            'progress' => [],
+            'uploads' => array_map(fn (array $file, int $index): array => [
+                'original' => $file['name'],
+                'name' => $id.'.tar.gz'.($single ? '' : '.'.str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT)),
+                'size' => (int) $file['size'],
+            ], $files, array_keys($files)),
+            'archive' => ['parts' => []],
+        ]);
+
+        $backup->save();
+
+        return $backup;
+    }
+
+    /**
+     * Дописывает кусок тома. Возвращает, сколько байт тома уже на сервере:
+     * если кусок пришёл не с того места, ничего не пишется — клиент продолжит
+     * с ответа.
+     */
+    public function appendUpload(int $index, int $offset, string $bytes): int
+    {
+        $upload = $this->data['uploads'][$index] ?? throw new RuntimeException('Такого тома в загрузке нет.');
+        $partial = self::directory().DIRECTORY_SEPARATOR.$upload['name'].'.uploading';
+        $received = is_file($partial) ? (int) filesize($partial) : 0;
+
+        if ($offset !== $received || $received + strlen($bytes) > $upload['size']) {
+            return $received;
+        }
+
+        file_put_contents($partial, $bytes, FILE_APPEND | LOCK_EX);
+        $received += strlen($bytes);
+
+        if ($received === $upload['size']) {
+            rename($partial, self::directory().DIRECTORY_SEPARATOR.$upload['name']);
+            $this->data['archive']['parts'][$index] = ['name' => $upload['name'], 'size' => $upload['size']];
+            ksort($this->data['archive']['parts']);
+
+            if (count($this->data['archive']['parts']) === count($this->data['uploads'])) {
+                $this->data['status'] = self::DONE;
+                $this->data['phase'] = 'done';
+                $this->data['finished_at'] = now()->toIso8601String();
+            }
+
+            $this->save();
+        }
+
+        return $received;
+    }
+
+    public function isUpload(): bool
+    {
+        return ($this->data['origin'] ?? null) === 'upload';
     }
 
     /**

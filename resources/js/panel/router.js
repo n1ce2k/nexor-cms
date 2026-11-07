@@ -9,6 +9,7 @@ import ProfilePage from './pages/ProfilePage.vue';
 import AgreementForm from './pages/agreements/AgreementForm.vue';
 import AgreementIndex from './pages/agreements/AgreementIndex.vue';
 import BackupIndex from './pages/backups/BackupIndex.vue';
+import RestorePage from './pages/backups/RestorePage.vue';
 import CookieSettings from './pages/cookies/CookieSettings.vue';
 import ElementForm from './pages/elements/ElementForm.vue';
 import ElementIndex from './pages/elements/ElementIndex.vue';
@@ -78,6 +79,7 @@ const routes = [
     { path: '/logs', name: 'logs', component: LogsIndex, meta: { permission: 'logs.view' } },
     { path: '/profile', name: 'profile', component: ProfilePage },
     { path: '/settings/backups', name: 'backups.index', component: BackupIndex, meta: { permission: 'backups.manage' } },
+    { path: '/settings/restore', name: 'restore', component: RestorePage, meta: { permission: 'backups.restore' } },
     { path: '/modules', name: 'modules.index', component: ModuleIndex, meta: { permission: 'modules.view' } },
     { path: '/updates', name: 'updates.index', component: UpdatesIndex, meta: { permission: 'updates.manage' } },
 

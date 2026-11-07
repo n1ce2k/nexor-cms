@@ -20,6 +20,7 @@ use Nexor\Cms\Http\Controllers\Api\MenuController;
 use Nexor\Cms\Http\Controllers\Api\MenuItemController;
 use Nexor\Cms\Http\Controllers\Api\ModuleController;
 use Nexor\Cms\Http\Controllers\Api\ProfileController;
+use Nexor\Cms\Http\Controllers\Api\RestoreController;
 use Nexor\Cms\Http\Controllers\Api\RoleController;
 use Nexor\Cms\Http\Controllers\Api\SettingController;
 use Nexor\Cms\Http\Controllers\Api\ToolsController;
@@ -236,6 +237,21 @@ Route::middleware('nexor.permission:backups.manage')->name('backups.')->prefix('
     Route::post('{backup}/step', [BackupController::class, 'step'])->name('step');
     Route::get('{backup}/download/{part}', [BackupController::class, 'download'])->name('download')->whereNumber('part');
     Route::delete('{backup}', [BackupController::class, 'destroy'])->name('destroy');
+});
+
+/*
+ * Восстановление: заменяет файлы и базу сайта — право отдельное от копий.
+ * Шаги идут не сюда, а на admin.restore.step — по токену, без сессии.
+ */
+Route::middleware('nexor.permission:backups.restore')->group(function (): void {
+    Route::get('restore', [RestoreController::class, 'show'])->name('restore.show');
+    Route::post('restore', [RestoreController::class, 'store'])->name('restore.store');
+    Route::post('restore/resume', [RestoreController::class, 'resume'])->name('restore.resume');
+    Route::delete('restore', [RestoreController::class, 'destroy'])->name('restore.destroy');
+
+    // Архив с компьютера: тома приходят кусками — так проходит лимит хостинга на загрузку.
+    Route::post('backups/uploads', [RestoreController::class, 'upload'])->name('backups.uploads.store');
+    Route::post('backups/uploads/{backup}/chunk', [RestoreController::class, 'chunk'])->name('backups.uploads.chunk');
 });
 
 /*

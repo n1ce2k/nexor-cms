@@ -156,6 +156,7 @@ class Permissions
                 'sort' => 760,
                 'items' => [
                     'backups.manage' => 'Создание, скачивание и удаление резервных копий',
+                    'backups.restore' => 'Восстановление сайта из резервной копии',
                 ],
             ],
         ] + Nexor::modules()->permissionDefinitions();

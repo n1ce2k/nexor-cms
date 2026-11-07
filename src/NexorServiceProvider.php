@@ -21,6 +21,7 @@ use Nexor\Cms\Console\LicenseCommand;
 use Nexor\Cms\Console\LoginLinkCommand;
 use Nexor\Cms\Console\PruneCookieConsentsCommand;
 use Nexor\Cms\Console\PublishComponentCommand;
+use Nexor\Cms\Console\RestoreCommand;
 use Nexor\Cms\Console\RunUpdateCommand;
 use Nexor\Cms\Console\ScanContentCommand;
 use Nexor\Cms\Console\SetPasswordCommand;
@@ -29,6 +30,7 @@ use Nexor\Cms\Console\SyncPermissionsCommand;
 use Nexor\Cms\Console\UserModelCommand;
 use Nexor\Cms\Contracts\NexorUser;
 use Nexor\Cms\Http\Controllers\AssetController;
+use Nexor\Cms\Http\Controllers\RestoreStepController;
 use Nexor\Cms\Http\Middleware\CheckFeature;
 use Nexor\Cms\Http\Middleware\CheckIblockPermission;
 use Nexor\Cms\Http\Middleware\CheckMaintenanceMode;
@@ -132,6 +134,7 @@ class NexorServiceProvider extends ServiceProvider
                 UserModelCommand::class,
                 HtaccessCommand::class,
                 BackupCommand::class,
+                RestoreCommand::class,
             ]);
 
             $this->registerPublishing();
@@ -261,6 +264,11 @@ class NexorServiceProvider extends ServiceProvider
             ->where('package', '[a-z0-9-]+')
             ->where('path', '.+')
             ->name('admin.assets');
+
+        // Шаг восстановления — без сессии и CSRF: база с таблицей сессий по ходу
+        // заменяется. Доступ даёт токен, выданный при запуске восстановления.
+        Route::post(Nexor::routePrefix().'/restore-step', RestoreStepController::class)
+            ->name('admin.restore.step');
 
         // The API is registered first: the panel's catch-all route would
         // otherwise swallow every /admin/api/* request.

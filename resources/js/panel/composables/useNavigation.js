@@ -137,6 +137,10 @@ export function useNavigation() {
             settings.push({ label: 'Резервное копирование', icon: 'save', to: { name: 'backups.index' } });
         }
 
+        if (session.can('backups.restore')) {
+            settings.push({ label: 'Восстановление', icon: 'clock', to: { name: 'restore' } });
+        }
+
         // if (session.can('logs.view')) {
         //     settings.push({ label: 'Журнал действий', icon: 'clock', to: { name: 'logs' } });
         // }

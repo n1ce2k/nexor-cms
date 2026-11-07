@@ -65,6 +65,10 @@ function formatDate(value) {
 }
 
 function contents(backup) {
+    if (backup.origin === 'upload') {
+        return 'загружена с компьютера';
+    }
+
     const parts = [];
 
     if (backup.options.database) {
@@ -85,6 +89,7 @@ const statuses = {
     stalled: { label: 'Прервана', color: 'amber' },
     done: { label: 'Готова', color: 'green' },
     failed: { label: 'Ошибка', color: 'red' },
+    uploading: { label: 'Загружается', color: 'violet' },
 };
 
 async function load() {

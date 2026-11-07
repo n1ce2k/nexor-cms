@@ -21,6 +21,17 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
  */
 class BackupController extends ApiController
 {
+    /** У загруженного с компьютера архива счётчиков работы нет. */
+    protected const EMPTY_PROGRESS = [
+        'files_total' => 0,
+        'files_done' => 0,
+        'bytes_total' => 0,
+        'bytes_done' => 0,
+        'tables_total' => 0,
+        'tables_done' => 0,
+        'skipped' => 0,
+    ];
+
     public function index(): JsonResponse
     {
         $directory = Backup::directory();
@@ -118,10 +129,12 @@ class BackupController extends ApiController
     protected function present(Backup $backup): array
     {
         $data = $backup->data;
-        $progress = $data['progress'];
+        $progress = $data['progress'] + self::EMPTY_PROGRESS;
 
         return [
             'id' => $backup->id(),
+            'origin' => $data['origin'] ?? 'backup',
+            'uploads' => $data['uploads'] ?? null,
             'status' => $backup->isStalled() ? 'stalled' : $data['status'],
             'phase' => $data['phase'],
             'percent' => $this->percent($backup),
@@ -146,7 +159,7 @@ class BackupController extends ApiController
     protected function percent(Backup $backup): int
     {
         $data = $backup->data;
-        $progress = $data['progress'];
+        $progress = $data['progress'] + self::EMPTY_PROGRESS;
 
         if ($data['status'] === Backup::DONE) {
             return 100;

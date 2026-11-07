@@ -22,7 +22,7 @@ class Nexor
      * The release is the git tag; this constant is what the running code can
      * print — in the panel, in a bug report, in an upgrade check.
      */
-    public const VERSION = '0.3.34';
+    public const VERSION = '0.3.35';
 
     /** Автор CMS — подпись в панели и в `php artisan about`. */
     public const AUTHOR = 'n1ce';
