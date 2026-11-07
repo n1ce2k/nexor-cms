@@ -226,8 +226,8 @@ class ArchiveExtractor
         if ($entry['kind'] === 'pax') {
             $entry['pax'] .= $bytes;
         } elseif ($entry['kind'] === 'file' && $entry['target'] !== null) {
-            if (file_put_contents($entry['target'], $bytes, FILE_APPEND) === false) {
-                throw new RuntimeException('Не удалось записать '.$entry['path'].' — проверьте права на папку и место на диске.');
+            if (@file_put_contents($entry['target'], $bytes, FILE_APPEND) === false) {
+                throw new RuntimeException('Не удалось записать '.$entry['target'].self::reason());
             }
         }
 
@@ -257,12 +257,24 @@ class ArchiveExtractor
         $directory = dirname($target);
 
         if (! is_dir($directory) && ! @mkdir($directory, 0755, true) && ! is_dir($directory)) {
-            throw new RuntimeException('Не удалось создать папку '.$directory.'.');
+            throw new RuntimeException('Не удалось создать папку '.$directory.self::reason());
         }
 
         if (@file_put_contents($target, '') === false) {
-            throw new RuntimeException('Не удалось записать '.$target.' — проверьте права.');
+            throw new RuntimeException('Не удалось записать '.$target.self::reason());
         }
+    }
+
+    /**
+     * Настоящая причина от PHP: «Permission denied», «Read-only file system»,
+     * «open_basedir restriction» — по ней и видно, что чинить.
+     */
+    public static function reason(): string
+    {
+        $message = error_get_last()['message'] ?? '';
+        $message = trim((string) preg_replace('/^.*?\):\s*/', '', $message));
+
+        return $message === '' ? '.' : ': '.$message.'.';
     }
 
     /**

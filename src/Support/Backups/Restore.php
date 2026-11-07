@@ -82,6 +82,27 @@ class Restore
     }
 
     /**
+     * Почему PHP не сможет писать в папку сайта; null — сможет.
+     *
+     * Проверяется пробным файлом, а не правами: в Docker папка кода бывает
+     * подключена только на чтение при 777 на файлах — права это не покажут.
+     */
+    public static function rootProblem(): ?string
+    {
+        $probe = Backup::root().DIRECTORY_SEPARATOR.'.nexor-write-test-'.Str::random(8);
+
+        if (@file_put_contents($probe, 'ok') === false) {
+            return 'PHP сайта не может писать в папку '.Backup::root().ArchiveExtractor::reason()
+                .' Файлы восстановить не получится: восстановите только базу, а файлы — из консоли'
+                .' или распакуйте архив вручную.';
+        }
+
+        @unlink($probe);
+
+        return null;
+    }
+
+    /**
      * Новый токен шагов. Прежний перестаёт действовать.
      */
     public function issueToken(): string

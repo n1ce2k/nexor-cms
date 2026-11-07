@@ -54,6 +54,12 @@ class RestoreCommand extends Command
             return self::FAILURE;
         }
 
+        if ($options['files'] && ($problem = Restore::rootProblem())) {
+            $this->components->error($problem);
+
+            return self::FAILURE;
+        }
+
         if (($current = Restore::current()) && $current->isRunning() && ! $current->isStalled()) {
             $this->components->error('Восстановление уже идёт из панели — дождитесь его или отмените.');
 

@@ -47,6 +47,10 @@ class RestoreController extends ApiController
             return $this->refuse('Выберите, что восстановить: файлы, базу или и то, и другое.');
         }
 
+        if ($validated['files'] && ($problem = Restore::rootProblem())) {
+            return $this->refuse($problem);
+        }
+
         if (($current = Restore::current()) && $current->isRunning() && ! $current->isStalled()) {
             return $this->refuse('Восстановление уже идёт — дождитесь его или отмените.', 409);
         }
